@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from celery.schedules import crontab
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,10 +44,94 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_redis',
+    'redis_cache',
 
     'users',
     'todolistApp',
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'celery': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+
+CELERY_QUEUES = {
+    'default': {
+        'exchange': 'default',
+        'binding_key': 'default',
+    },
+    'emails': {
+        'exchange': 'emails',
+        'binding_key': 'emails',
+    },
+}
+
+CELERY_ROUTES = {
+    'myapp.tasks.send_email': {'queue': 'emails'},
+}
+
+
+CELERY_BEAT_SCHEDULE = {
+    'add_every_minute': {
+        'task': 'myapp.tasks.add',
+        'schedule': crontab(minute='*/1'),
+        'args': (16, 16),
+    },
+}
+
+
+CELERY_BEAT_SCHEDULE = {
+    'add-every-30-seconds': {
+        'task': 'myapp.tasks.add',
+        'schedule': 30.0,  # Выполнение задачи каждые 30 секунд
+        'args': (16, 16),
+    },
+    'add-every-monday-morning': {
+        'task': 'myapp.tasks.add',
+        'schedule': crontab(hour=7, minute=30, day_of_week=1),  # Каждый понедельник в 7:30 утра
+        'args': (16, 16),
+    },
+}
+
+
+CELERY_TIMEZONE = 'UTC'
+
 
 AUTH_USER_MODEL = 'users.User'
 
