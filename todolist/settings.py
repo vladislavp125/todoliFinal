@@ -14,6 +14,8 @@ from pathlib import Path
 from datetime import timedelta
 from celery.schedules import crontab
 from celery.schedules import crontab
+import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3fd*-fo!cf-wmw+=4y-^6-v@4ud&xht26ach85b2jv5ppe2itk'
+SECRET_KEY = config('SECRET_KEY', default='your_default_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -79,14 +81,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-    'loggers': {
-        'celery': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
+        'level': config('LOG_LEVEL', default='WARNING'),
     },
 }
 
@@ -189,11 +184,11 @@ WSGI_APPLICATION = 'todolist.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'HOST': 'localhost',
-        'USER': 'postgres',
-        'PORT': '5432',
-        'PASSWORD': '123',
+        'NAME': config('DB_NAME'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'USER': config('DB_USER'),
+        'PORT': config('DB_PORT', default=5432, cast=int),
+        'PASSWORD': config('DB_PASSWORD'),
     }
 }
 
