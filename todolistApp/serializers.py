@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from .models import Task, Tag
 from .utils import get_cached_tags
 from todolistApp.models import Task, Comment, Tag
 
