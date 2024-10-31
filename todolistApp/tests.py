@@ -35,7 +35,6 @@ class TaskTestCase(TestCase):
             Task.objects.get(id=task_id)
 
 
-
 class TaskTestCase(TestCase):
     def setUp(self):
         self.task = Task.objects.create(title="Test Task", description="Test Description")

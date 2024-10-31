@@ -15,3 +15,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
+
+    def __str__(self):
+        return self.username

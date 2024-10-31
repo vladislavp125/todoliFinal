@@ -25,7 +25,7 @@ class TaskSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     comment_count = serializers.IntegerField(source='comments.all.count', read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    tags = serializers.SerializerMethodField()
+
 
     def get_tags(self, obj):
         tags = get_cached_tags(obj.id)

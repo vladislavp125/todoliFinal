@@ -28,7 +28,7 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractUser, PermissionsMixin):
-    username = None
+    username = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
     phone = models.CharField(max_length=12, unique=True, null=True, blank=True)
     email = models.CharField(max_length=255, unique=True, null=True, blank=True)
@@ -42,5 +42,4 @@ class User(AbstractUser, PermissionsMixin):
         verbose_name = 'пользователь'
         verbose_name_plural = 'пользователи'
 
-    def __str__(self):
-        return self.username
+
